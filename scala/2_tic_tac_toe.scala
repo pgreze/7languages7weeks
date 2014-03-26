@@ -6,13 +6,13 @@ object Board {
 
     val choices = Map[String, Integer](
         "A1" -> 0,
-        "A2" -> 1,
-        "A3" -> 2,
-        "B1" -> 3,
+        "B1" -> 1,
+        "C1" -> 2,
+        "A2" -> 3,
         "B2" -> 4,
-        "B3" -> 5,
-        "C1" -> 6,
-        "C2" -> 7,
+        "C2" -> 5,
+        "A3" -> 6,
+        "B3" -> 7,
         "C3" -> 8
     )
     var moves = Map[Integer, String]()
@@ -25,11 +25,12 @@ object Board {
 
         draw
 
-        while(winner == "" && step < 10) {
+        while(winner == "" && step < 6) {
             val user_choice = user_interact(step)
 
             moves(user_choice) = "X"
-            moves(ia_choice) = "O"
+            if(step < 5)
+                moves(ia_choice) = "O"
 
             draw
 

@@ -19,18 +19,23 @@ object Board {
 
     val rand = new Random(System.currentTimeMillis())
 
-    def play {
+    def play(players: Integer) {
         var winner = ""
         var step = 1
 
         draw
 
         while(winner == "" && step < 6) {
-            val user_choice = user_interact(step)
+            moves(user_interact(step, "1st player")) = "X"
 
-            moves(user_choice) = "X"
-            if(step < 5)
-                moves(ia_choice) = "O"
+            if(step < 5) {
+                if(players > 1) {
+                    draw
+                    moves(user_interact(step, "2nd player")) = "O"
+                } else {
+                    moves(ia_choice) = "O"
+                }
+            }
 
             draw
 
@@ -38,10 +43,20 @@ object Board {
             step += 1
         }
 
-        if(winner == "X")
-            println("You win !!")
-        else {
-            println("You failed !!")
+        if(players == 1) {
+            if(winner == "X")
+                println("You win !!")
+            else {
+                println("You failed !!")
+            }
+        } else {
+            if(winner == "X") {
+                println("1st player win !!")
+            } else if(winner == "O") {
+                println("2nd player win !!")
+            } else {
+                println("Nobody win.")
+            }
         }
     }
 
@@ -78,8 +93,8 @@ object Board {
         return ""
     }
 
-    def user_interact(step: Integer): Int = {
-        println("Step " + step + ", Choose a position between A1 and C9:")
+    def user_interact(step: Integer, playerName: String): Int = {
+        println("(step " + step + ") >> " + playerName + ", please choose a position between A1 and C9:")
         var choice = ""
         while(!choices.contains(choice) || moves.contains(choices(choice))) {
             if(choice != "") {
@@ -122,4 +137,9 @@ object Board {
     }
 }
 
-Board.play
+var nPlayers = 1;
+if(args.contains("--two-players")) {
+    nPlayers = 2;
+}
+
+Board.play(nPlayers)

@@ -59,7 +59,7 @@ val (x, y) = (1, 2)
 ## Classes
 
 
-### Empty class and many constructors
+### Empty class with different constructors
 
 
 ```scala
@@ -268,6 +268,61 @@ res54: Int = 6
 
 
 
+## XML
+
+
+XML can be declared as Scala variable:
+
+```scala
+scala> val movies = | <movies>
+     |     <movie genre="action">Pirates of the Caribbean</movie>
+     |     <movie genre="fairytale">Edward Scissorhands</movie>
+     | </movies>
+```
+
+We can search elements with a XPath syntax:
+
+```scala
+scala> val movieNodes = movies \ "movie"
+movieNodes: scala.xml.NodeSeq =
+  <movie genre="action">Pirates of the Caribbean</movie>
+  <movie genre="fairytale">Edward Scissorhands</movie>
+scala> movieNodes(0)
+res3: scala.xml.Node = <movie genre="action">Pirates of the Caribbean</movie>
+scala> movieNodes(0) \ "@genre"
+res4: scala.xml.NodeSeq = action
+```
+
+
+## Pattern matching and Guards
+
+
+```scala
+def factorial(n: Int): Int = n match {
+    case 0 => 1
+    case x if x > 0 => factorial(n - 1) * n
+}
+println(factorial(3))
+```
+
+
+## Regular expression
+
+
+```scala
+scala> val reg = """^(F|f)\w*""".r
+reg: scala.util.matching.Regex = ^(F|f)\w*
+
+scala> println(reg.findFirstIn("Fantastic"))
+Some(Fantastic)
+
+scala> println(reg.findFirstIn("not Fantastic"))
+None
+
+scala> "the".r.findAllIn("the way the scissors trim the hair and the shrubs") res9: scala.util.matching.Regex.MatchIterator = non-empty iterator
+```
+
+
 ## Divers
 
 
@@ -279,5 +334,3 @@ res54: Int = 6
 scala> List("one", "two", 3)
 res6: List[Any] = List(one, two, 3)
 ```
-
-- 

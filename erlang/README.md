@@ -111,7 +111,7 @@ lists:foreach(Print, Numbers).
 
 ```erlang
 % Will return [2, 3, 4]
-lists:map(fun(X) -> X + 1 end, Numbers). 
+lists:map(fun(X) -> X + 1 end, Numbers).
 ```
 
 **lists:filter**:
@@ -241,4 +241,108 @@ if
 end.
 ```
 
+
+# Concurrency primitives
+
+
+## Basics
+
+
+There are 3 primitives to play with concurrency in Erlang :
+
+- **receive** to receive a message
+- *Pid = **spawn**(fun translate:loop/0).* to spawn a function translate:loop as a lightweight process.
+- *Pid **!** Message* to send a message to the process.
+
+There is a basic example of **translate:loop** :
+
+```erlang
+-module(translate).
+-export([loop/0]).
+loop() ->
+    receive
+        "casa" ->
+            io:format("house~n"),
+            loop();
+        _ ->
+            io:format("I don't understand.~n"),
+            loop()
+    end.
+```
+
+
+## Synchrone communication
+
+
+To communicate between 2 process, we can send a tuple message with requester's Pid and read message. With our translation system:
+
+```erlang
+receive
+    {Pid, "casa"} ->
+        Pid ! "house",
+        loop();
+    ...
+```
+
+And in requester, with a new function:
+
+```erlang
+translate(To, Word) ->
+    To ! {self(), Word},
+    receive
+        Translation -> Translation
+    end.
+```
+
+
+## Terminate a process
+
+
+A process can terminate with a message:
+
+```erlang
+receive
+    exit_msg -> exit({process,die,at,erlang:time()});
+```
+
+A function can indicated if a process is die:
+
+```erlang
+erlang:is_process_alive(Pid).
+```
+
+## Monitoring a process
+
+
+Erlang allow to create monitoring process, with the function **link** and can receive an exit message. After that, the monitor can respawn a died process or do additionnal actions. An example:
+
+```erlang
+loop() ->
+    % Allow the process to receive EXIT message
+    process_flag(trap_exit, true),
+
+    % Receive loop
+    receive
+        new ->
+            io:format("Creating and monitoring process.~n"),
+            % spawn and link a process at the same time
+            % Allow also to use revolver as the process' global name
+            register(revolver, spawn_link(fun roulette:loop/0)),
+            loop();
+
+        % EXIT with process's pid and reason
+        % is the tuple message sent by the exit function
+        % to all process registered to trap_exit
+        {'EXIT', From, Reason} ->
+            io:format("The shooter ~p died with reason ~p.", [From, Reason]),
+            io:format(" Restarting. ~n"),
+            % Sending a message to ourself,
+            % to spawn and register a new process
+            self() ! new,
+            loop()
+        end.
+```
+
+OTP provides very great process's supervisors with many monitoring policies.
+See this [good tutorial](http://learnyousomeerlang.com/supervisors).
 

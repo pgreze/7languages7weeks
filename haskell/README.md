@@ -217,5 +217,31 @@ And with pattern matching:
 [ (y, x) | (x, y) <- [(1, 2), (2, 3), (3, 1)]]
 ```
 
+# Higher order functions
 
+```haskell
+-- A lambda example
+(\x -> x ++ " captain.") "Logical," -- > "Logical, captain."
+
+-- Partial functions are easy to build
+map (+ 1) [1, 2, 3]
+
+map (\x -> x * x) [1, 2, 3] -- > [2, 4, 6]
+
+foldl1 (+) [1 .. 3] -- > 6
+```
+
+Variables can be local to a function:
+
+```haskell
+module Main where
+    squareAll list = map square list
+        where square x = x * x
+-- or
+    squareAll list =
+        let
+            square x = x * x
+        in
+            map square list
+```
 

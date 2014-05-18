@@ -143,6 +143,7 @@ Tuple has also helper functions like fst (return first element):
 ```haskell
 last (String, String) -> String
 last = fst . reverse
+-- Note: f(g x) = f . g
 ```
 
 ## Traversing lists
